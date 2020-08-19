@@ -61,8 +61,6 @@ class NeuralNet:
         test_X0 = np.ones((n, 1))
         self.test_X = np.hstack((test_X0, self.test_X))
 
-        # self.num_classes = len(np.unique(self.train_y))
-
     def train(self):
         y = self.train_y.astype(int)
         for i in range(self.num_epoch):

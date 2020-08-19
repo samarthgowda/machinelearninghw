@@ -1,0 +1,813 @@
+\documentclass[12pt]{article}
+\usepackage{amsmath, amssymb, amsthm, enumerate, framed, graphicx} 
+\usepackage[usenames,dvipsnames]{color}
+\usepackage{bm} 
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
+\usepackage{float}
+\setlength{\marginparwidth}{2.15cm}
+\usepackage{booktabs}
+\usepackage[inline]{enumitem} % For inline enumerate* and itemize*
+\usepackage{enumerate}
+\usepackage{epsfig}
+\usepackage{setspace}
+\usepackage{parskip}
+\usepackage{hyperref}
+\usepackage[normalem]{ulem}
+\usepackage{tikz}
+\usepackage{pgfplots}
+\usepackage[font=scriptsize]{subcaption}
+\usepackage{float}
+\usepackage{environ}
+\usepackage{bbm}
+\usepackage[normalem]{ulem}
+\usepackage{xcolor}
+\usepackage{minted}
+\usepackage[many]{tcolorbox}
+\usepackage{tabu}
+\usepackage[utf8]{inputenc}
+\usepackage{array}
+\usepackage{wrapfig}
+\usepackage{multirow}
+\usepackage[final]{listings}
+\usepackage{algorithm}
+\usepackage{algorithmicx}
+\usepackage[noend]{algpseudocode}
+
+\usepackage{graphics}
+\usetikzlibrary{positioning, arrows, automata}
+\pgfplotsset{compat=newest}
+\usepackage{graphicx}
+\usepackage{titling}
+\usepackage{url}
+\usepackage{xcolor}
+\usepackage{lipsum}
+\usepackage{lastpage}
+\usepackage[colorlinks=true,urlcolor=blue]{hyperref}
+\usepackage{multicol}
+\usepackage{tabularx}
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{amssymb}
+\usepackage{setspace}
+\usepackage{marvosym}
+\usepackage{wrapfig}
+\usepackage{datetime}
+\usepackage[many]{tcolorbox}
+\usepackage{array}
+\usepackage{multirow}
+\usepackage{wasysym}
+\usepackage{cancel}
+\usepackage{cprotect}
+\usepackage{listings}
+\usepackage{color}
+
+
+
+
+
+
+
+
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\blackcircle}{\tikz\draw[black,fill=black] (0,0) circle (1ex);}
+\renewcommand{\circle}{\tikz\draw[black] (0,0) circle (1ex);}
+
+
+% SOLUTION environment
+\NewEnviron{soln}{
+\leavevmode\color{red}\ignorespaces \textbf{Solution} \BODY }{}
+
+% QUESTION AUTHORS environment
+\NewEnviron{qauthor}{
+\leavevmode\color{blue}\ignorespaces \textbf{Author} \BODY}{}
+
+% TO ONLY SHOW HOMEWORK QUESTIONS, include following (else comment out):
+%\RenewEnviron{soln}{}
+%\RenewEnviron{qauthor}{}
+
+
+%\newcommand{\norm}[1]{\lVert #1 \rVert}
+%\newcommand{\st}{\mathrm{s.t.}}
+
+
+\newtcolorbox[]{solution}[1][]{%
+    breakable,
+    enhanced,
+    colback=white,
+    title=Solution,
+    #1
+}
+
+\makeatletter
+\newcommand{\removelatexerror}{\let\@latex@error\@gobble}
+\makeatother
+
+\newcommand{\argmax}{\mathop{\mathrm{argmax}}}
+\newcommand{\argmin}{\mathop{\mathrm{argmin}}}
+
+\tikzstyle{mybox} = [fill=blue!10, very thick,
+    rectangle, rounded corners, inner sep=1em, inner ysep=1em]
+
+
+\NewEnviron{notebox}{
+\begin{tikzpicture}
+\node [mybox] (box){
+    \begin{minipage}{\textwidth}
+        \BODY
+    \end{minipage}
+};
+\end{tikzpicture}
+}
+
+
+\begin{document}
+
+\section*{}
+\begin{center}
+  \centerline{\textsc{\LARGE  Homework 9}}
+  \vspace{0.5em}
+  \centerline{\textsc{\LARGE SVMs, K-Means, PCA, Graphical Models}}
+  \textsc{\large CMU 10-601: Machine Learning (Spring 2020)} \\
+  \url{https://piazza.com/cmu/spring2020/1030110601}
+  \centerline{OUT: Wednesday, 22nd April, 2020}
+  \centerline{DUE: Wednesday, 29th April, 2020, 11:59pm EDT}
+    \centerline{TAs: David, Hongyi, Kyle, Shaotong, Zola}
+\end{center}
+
+
+\section*{START HERE: Instructions}
+
+\begin{notebox}
+Homework 9 covers topics on SVMs, K-Means, PCA and Graphical Models. The homework includes multiple choice, True/False, and short answer questions. 
+\end{notebox}
+
+\begin{itemize}
+\item \textbf{Collaboration policy:} Collaboration on solving the homework is allowed, after you have thought about the problems on your own. It is also OK to get clarification (but not solutions) from books or online resources, again after you have thought about the problems on your own. There are two requirements: first, cite your collaborators fully and completely (e.g., ``Jane explained to me what is asked in Question 2.1''). Second, write your solution {\em independently}: close the book and all of your notes, and send collaborators out of the room, so that the solution comes from you only.  See the Academic Integrity Section on the course site for more information: \url{http://www.cs.cmu.edu/~mgormley/courses/10601/about.html}
+
+\item\textbf{Late Submission Policy:} See the late submission policy here: \url{http://www.cs.cmu.edu/~mgormley/courses/10601/about.html}
+
+\item\textbf{Submitting your work:} 
+
+\begin{itemize}
+
+\item \textbf{Gradescope:} For written problems such as short answer, multiple choice, derivations, proofs, or plots, we will be using Gradescope (\url{https://gradescope.com/}). Please use the provided template. Submissions can be handwritten onto the template, but should be labeled and clearly legible. If your writing is not legible, you will not be awarded marks. Alternatively, submissions can be written in LaTeX. Regrade requests can be made, however this gives the TA the opportunity to regrade your entire paper, meaning if additional mistakes are found then points will be deducted.
+Each derivation/proof should be completed on a separate page. For short answer questions, you \textbf{should not} include your work in your solution.  If you include your work in your solutions, your assignment may not be graded correctly by our AI assisted grader. In addition, please tag the problems to the corresponding pages when submitting your work.
+
+\end{itemize}
+
+% \item \textbf{Materials:} Download from autolab the tar file (``Download handout"). The tar file will contain all the data that you will need in order to complete this assignment.
+
+\end{itemize}
+
+For multiple choice or select all that apply questions, shade in the box or circle in the template document corresponding to the correct answer(s) for each of the questions. For \LaTeX users, use $\blacksquare$ and \blackcircle  for shaded boxes and circles, and don't change anything else.
+
+\clearpage
+
+\section*{Instructions for Specific Problem Types}
+
+For ``Select One" questions, please fill in the appropriate bubble completely:
+
+\begin{quote}
+\textbf{Select One:} Who taught this course?
+\begin{list}{}
+     \item\CIRCLE{} Matt Gormley
+     \item\Circle{} Marie Curie
+     \item\Circle{} Noam Chomsky
+\end{list}
+\end{quote}
+
+If you need to change your answer, you may cross out the previous answer and bubble in the new answer:
+
+\begin{quote}
+\textbf{Select One:} Who taught this course?
+\begin{list}{}
+     \item\CIRCLE{} Matt Gormley
+     \item\Circle{} Marie Curie\\
+     \xcancel{\CIRCLE}{} Noam Chomsky
+\end{list}
+\end{quote}
+
+
+For ``Select all that apply" questions, please fill in all appropriate squares completely:
+
+\begin{quote}
+\textbf{Select all that apply:} Which are scientists?
+    \begin{list}{}
+    \item $\blacksquare$ Stephen Hawking 
+    \item $\blacksquare$ Albert Einstein
+    \item $\blacksquare$ Isaac Newton
+    \item $\square$ I don't know
+\end{list}
+\end{quote}
+
+Again, if you need to change your answer, you may cross out the previous answer(s) and bubble in the new answer(s):
+
+\begin{quote}
+\textbf{Select all that apply:} Which are scientists?
+    \begin{list}{}
+    \item $\blacksquare$ Stephen Hawking 
+    \item $\blacksquare$ Albert Einstein
+    \item $\blacksquare$ Isaac Newton\\
+    \xcancel{$\blacksquare$} I don't know
+\end{list}
+\end{quote}
+
+For questions where you must fill in a blank, please make sure your final answer is fully included in the given space. You may cross out answers or parts of answers, but the final answer must still be within the given space.
+
+\begin{quote}
+\textbf{Fill in the blank:} What is the course number?
+
+\begin{tcolorbox}[fit,height=1cm, width=4cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    \begin{center}\huge10-601\end{center}
+    \end{tcolorbox}\hspace{2cm}
+    \begin{tcolorbox}[fit,height=1cm, width=4cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    \begin{center}\huge10-\xcancel{7}601\end{center}
+    \end{tcolorbox}
+\end{quote}
+\clearpage
+
+\section{Graphical Models [15pts]}
+
+In the Kingdom of Westeros, Summer has come. Jon Snow, the King in the North, has taken the responsibility to defeat the Giants and protect the realm.
+
+If Jon Snow can get Queen Cersei and Daenerys Queen of the Dragons to help him Jon is likely to beat the giants. Cersei and Daenerys are powerful women who are skeptical of the existence of Giants and will most likely only consider joining Jon if the are shown evidence of an imminent Giant attack. They can only be shown of an attack if Jon captures a live Giant.
+
+The Bayesian network that represents the relationship between the events described above is shown below. Use the following notation for your variables: Jon Snow captures a live Giant ($X_1$), Jon shows Censei and Daenerys a live Giant  ($X_2$), Cersei agrees to help ($X_3$), Daenerys agrees to help ($X_4$) and Giants defeated ($X_5$).
+\begin{figure}[!hbtp]
+\centering
+\includegraphics[scale=0.3]{figures/q2.png}
+\end{figure}
+
+\begin{enumerate}
+\item \textbf{[1pt]} Write down the factorization of the above directed graphical model.
+
+\begin{tcolorbox}[fit,height=1cm, width=15cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution
+\end{tcolorbox}
+
+
+\item \textbf{[1pt]} Each random variable represented in the above Bayesian network is binary valued (i.e. either the event happens or it does not). State the minimum number of parameters you need to fully specify  this Bayesian network.
+
+\begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution
+\end{tcolorbox}
+
+
+\item \textbf{[1pt]} If we didn't use these conditional independence assumptions above, what would be the minimum number of parameters we would need to model any joint distribution over the same set of random variables?
+
+\begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution
+\end{tcolorbox}
+
+
+
+\item \textbf{[5pts]} For the following questions fill in the blank with the smallest set $\mathcal{S}$ of random variables needed to be conditioned on in order for the independence assumption to hold. For example $X_i \perp X_j \mid \mathcal{S}$. What is the smallest set $\mathcal{S}$ that makes this statement true? The empty set $\emptyset$ is a valid answer, additionally if the independence assumption cannot be satisfied no matter what we condition on then your answer should be 'Not possible'.
+\begin{enumerate}
+
+\item \textbf{[1pt]} $X_1 \perp X_3 \mid $ \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution 
+\end{tcolorbox}  \\
+
+\item \textbf{[1pt]} $X_1 \perp X_5 \mid$ \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution 
+\end{tcolorbox}   \\
+
+\item \textbf{[1pt]} $X_2 \perp X_4 \mid $ \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution 
+\end{tcolorbox}  \\
+
+\item \textbf{[1pt]} $X_3 \perp X_4 \mid $ \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution 
+\end{tcolorbox}  \\
+
+\item \textbf{[1pt]} $X_2 \perp X_5 \mid $ \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution 
+\end{tcolorbox}  \\
+
+\end{enumerate}
+
+\item \textbf{[7pts]} Jon gets his friend Sam to calculate some estimates of his chances. Sam returns to Jon with the following conditional probabilities tables:
+
+\begin{table}[H]
+    \centering
+    \begin{tabular}{|c|c|}
+    \hline
+         $X_1=0$ & $0.3$  \\ \hline
+         $X_1=1$ & $0.7$    \\  \hline
+    \end{tabular}
+    \\ 
+    \begin{tabular}{|c|c|c|}
+    \hline
+            & $X_1=0$ & $X_1=1$   \\  \hline
+        $X_2=0$ & $0.8$ & $0.25$ \\  \hline
+        $X_2=1$ & $0.2$  & $0.75$    \\  \hline
+    \end{tabular}
+    \\ 
+    \begin{tabular}{|c|c|c|}
+    \hline
+            & $X_2=0$ & $X_2=1$   \\  \hline
+        $X_3=0$ & $0.5$ & $0.6$ \\  \hline
+        $X_3=1$ & $0.5$  & $0.4$    \\  \hline
+    \end{tabular}
+    \\ 
+    \begin{tabular}{|c|c|c|}
+    \hline
+            & $X_2=0$ & $X_2=1$   \\  \hline
+        $X_4=0$ & $0.3$ & $0.2$ \\  \hline
+        $X_4=1$ & $0.7$  & $0.8$    \\  \hline
+    \end{tabular}
+    \\ 
+    \begin{tabular}{|c|c|c|c|c|}
+    \hline
+            & $X_3=0, X_4=0$ & $X_3=0,X_4=1$ & $X_3=1,X_4=0$ & $X_4=1,X_3=1$   \\  \hline
+        $X_5=0$ & $0.4$ & $0.7$ & $0.8$ & $0.5$ \\  \hline
+        $X_5=1$ & $0.6$  & $0.3$ & $0.2$ & $0.5$    \\  \hline
+    \end{tabular}
+    \caption{Sam's Conditional Probability tables}
+\end{table}
+
+Using the conditional probabilities for our graphical model, compute the following (Your answers should be given to 5 decimal places): 
+\begin{enumerate}
+\item \textbf{[2pts]} $P(X_1=0, X_2=1, X_3=0, X_4=1, X_5=0)$. 
+
+
+\begin{tcolorbox}[fit,height=1cm, width=4cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution 
+\end{tcolorbox}\\
+
+
+\item \textbf{[5pts]}$P(X_1 = 1 | X_3 = 1)$ 
+
+\begin{tcolorbox}[fit,height=1cm, width=4cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+%solution 
+\end{tcolorbox}\\
+
+\end{enumerate}
+\end{enumerate}
+
+
+\clearpage
+\section{K Means [19pts]}
+
+% \begin{figure}[H]
+%   \centering
+%      \includegraphics[width=0.5\linewidth]{figures/}
+%      \caption{Dataset}
+%   \label{fig:KMeans}
+%  \end{figure}
+ 
+ \begin{figure}[H]
+        \begin{center}
+        \begin{subfigure}{.6\textwidth}
+             %\centering
+            \includegraphics[width=\linewidth]{figures/d12.png}
+        %%        %\centering
+            \caption{Dataset A}
+            \label{fig:sfig1}
+        \end{subfigure}
+        %\end{center}
+        %\begin{center}
+        \begin{subfigure}{.6\textwidth}
+             %\centering
+            \includegraphics[width=\linewidth]{figures/d23.png}
+        %    %\centering
+            \caption{Dataset B}
+            \label{fig:sfig2}
+        \end{subfigure}
+        \end{center}
+
+        \begin{center}
+        \begin{subfigure}{.6\textwidth}
+            %\centering
+            \includegraphics[width=\linewidth]{figures/d32.png}
+            %\centering
+            \caption{Dataset C}
+            \label{fig:sfig3}
+        \end{subfigure}   
+        \end{center}
+     % \end{tabular}
+     
+     
+         \caption{Datasets}
+          \label{fig:KMeans}
+       
+         %\caption{4 x 4}
+        %\end{figure}
+        \end{figure}
+\newpage
+ \begin{enumerate}
+ \item \textbf{[3pts]} Consider the 3 datasets A, B and C as shown in Figure~\ref{fig:KMeans}. Each dataset is classified into $k$ clusters as represented by different colors in the figure. For each dataset, determine which image with cluster centers (denoted by X) is generated by K-means method.The distance measure used here is the Euclidean distance.
+ \begin{enumerate}[label*=\arabic*.]
+    \item \textbf{[1pt]} Dataset A \textbf{(Select one)}
+\begin{list}{}
+\item $\circle$ A.1
+\item $\circle$ A.2
+\end{list}
+    
+    
+    \item \textbf{[1pt]} Dataset B \textbf{(Select one)}
+\begin{list}{}
+\item $\circle$ B.1
+\item $\circle$ B.2
+\end{list}
+
+    
+    \item \textbf{[1pt]} Dataset C \textbf{(Select one)}
+\begin{list}{}
+\item $\circle$ C.1
+\item $\circle$ C.2
+\end{list}
+
+
+    
+ \end{enumerate}
+%\clearpage
+ \item \textbf{[10pts]} Consider a Dataset $\textbf{D}$ with 5 points as shown below. Perform a k-means clustering on this dataset with $k$ as 2 using the Euclidean distance as the distance function.
+ Remember that in the K-means algorithm, an iteration consists of performing following tasks: Assigning each data point to it's nearest cluster center followed by recomputation of those centers based on all the data points assigned to it. Initially, the 2 cluster centers are chosen randomly as $\mu0$ = (5.3, 3.5) (0), $\mu1$ = (5.1, 4.2) (1).
+ 
+\[
+D=\begin{bmatrix}
+5.5&3.1\\
+5.1&4.8\\
+6.6&3.0\\
+5.5&4.6\\
+6.8&3.8\\
+%5.5&3.1\\
+% 6.9&3.4\\
+% 5.5&4.6\\
+% 6.3&4.9\\
+% 5.5&3.9\\
+\end{bmatrix}
+\]
+
+    \begin{enumerate}[label*=\arabic*.]
+    \item \textbf{[3pts]} Which of the following points will be the center for cluster 0 after the first iteration?
+    \textbf{Select one:}
+    \begin{list}{}
+        \item $\circle$ (5.7 , 4.1)
+        \item $\circle$ (5.6 , 4.8)
+        \item $\circle$ (6.3 , 3.3)
+        \item $\circle$ (6.7 , 3.4)
+    \end{list}
+    \newpage
+    \item \textbf{[3pts]} Which of the following points will be the center for cluster 1 after the first iteration?
+    \textbf{Select one:}
+    \begin{list}{}
+        \item $\circle$ (6.1 , 3.8)
+        \item $\circle$ (5.5 , 4.6)
+        \item $\circle$ (5.4 , 4.7)
+        \item $\circle$ (5.3 , 4.7)
+    \end{list}
+    
+    \item \textbf{[2pt]} How many points will belong to cluster 0 after the first iteration?
+    
+    
+    \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    %solution
+    \end{tcolorbox}
+    
+    
+    \item \textbf{[2pt]} How many points will belong to cluster 1 after the first iteration?
+    
+    
+    \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    %solution
+    \end{tcolorbox}
+
+   \end{enumerate}
+   
+   \item \textbf{[6pts]} Recall that in k-means clustering we attempt to find $k$ cluster centers $c_j \in \R^d, j\in \{1,\dots,k\}$ such that the total distance between each datapoint and the nearest cluster center is minimized. Then the objective function is,
+   \begin{align}
+   \sum_{i=1}^n \min_{j\in\{1,\dots ,k\}} ||x_i - c_j||^2 
+   \label{eq:kmeansObj}
+   \end{align}
+   In other words, we attempt to find $c_1 ,\dots ,c_k$ that minimizes Eq. \eqref{eq:kmeansObj}, where n is the number of data points. To do so, we iterate between assigning $x_i$ to the nearest cluster center and updating each cluster center $c_j$ to the average of all points assigned to the j th cluster.  Instead of holding the number of clusters k fixed, your friend John tries to minimize Eq. \eqref{eq:kmeansObj} over k. Yet, you found this idea to be a bad one. 
+
+    Specifically, you convinced John by providing two values $\alpha$, the minimum possible value of Eq. \eqref{eq:kmeansObj}, and $\beta$, the value of k when Eq. \eqref{eq:kmeansObj} is minimized. 
+
+    \begin{enumerate}[label*=\arabic*.]
+
+    
+    \item \textbf{[3pts]} What is the value of $\alpha + \beta$ when $n=100$?
+
+    \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    %solution
+    \end{tcolorbox}
+    
+
+    \item \textbf{[3pts]} We want to see how k-means clustering works on a single dimension. Consider the case in which k = 3 and we have 4 data points $x_1=1, x_2 = 2, x_3 = 5, x_4 =7$. What is the optimal value of the objective Eq. \eqref{eq:kmeansObj}? 
+    
+    \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    %solution
+    \end{tcolorbox}
+    
+    \end{enumerate}
+    
+    
+\end{enumerate}
+
+\clearpage
+\section{PCA [13pts]}
+
+\begin{enumerate}
+    \item \textbf{[4pts]} Assume we are given a dataset X for which the eigenvalues of the covariance matrix are:
+    (2.2, 1.7, 1.4, 0.8, 0.4, 0.2, 0.15, 0.02, 0.001). What is the smallest value of k we can use if we want to retain 75\% of the variance (sum of all the variances in value) using the first k principal components?
+    
+    \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    %solution
+    \end{tcolorbox}
+    
+    
+    \item \textbf{[3pts]} Assume we apply PCA to a matrix $X \in R^{n \times m}$ and obtain a set of PCA features, $Z \in R^{n \times m}$ .We divide this set into two, $Z1$ and $Z2$.The first set, Z1, corresponds to the top principal components. The second set, Z2, corresponds to the remaining principal components. Which is more common in the training data:
+    \textbf{Select one:}
+    \begin{list}{}
+        \item $\circle$ a point with large feature values in $Z1$ and small feature values in  $Z2$
+        \item $\circle$ a point with large feature values in $Z2$ and small feature values in  $Z1$
+        \item $\circle$ a point with large feature values in $Z2$ and large feature values in  $Z1$
+        \item $\circle$ a point with small feature values in $Z2$ and small feature values in  $Z1$
+    \end{list}
+    
+    
+    \item \textbf{[2pts]} For the data set shown below, what will be its first principal component? %Options are given in the form of (first Principal Component, second Principal Component).
+    \begin{figure}[H]
+    \centering
+    \includegraphics[width=0.65\linewidth]{figures/pca1.png}
+    \end{figure}
+    \newpage
+    \textbf{Select one:}
+    \begin{list}{}
+        %\item $\circle$ (a,b)
+        \item $\circle$ d %(d,b)
+        \item $\circle$ b %(b,d)
+        \item $\circle$ c %(c,a)
+        \item $\circle$ a %(a,c)
+        
+    \end{list}
+    
+    \item \textbf{[2pts]} \textbf{NOTE : This is continued from the previous question.} What is the second principal component in the figure from the previous question? %Options are given in the form of (first Principal Component, second Principal Component).
+    % \begin{figure}[H]
+    % \centering
+    % \includegraphics[width=0.65\linewidth]{figures/pca1.png}
+    % \end{figure}
+    \textbf{Select one:}
+    \begin{list}{}
+        %\item $\circle$ (a,b)
+        \item $\circle$ d %(d,b)
+        \item $\circle$ b %(b,d)
+        \item $\circle$ c %(c,a)
+        \item $\circle$ a %(a,c)
+        
+    \end{list}
+    \item \textbf{[2pts]} \textbf{NOTE : This is continued from the previous question.}
+What is the third principal component in the figure from the previous question?
+     \textbf{Select one:}
+    \begin{list}{}
+        \item $\circle$ (a)
+        \item $\circle$ (b)
+        \item $\circle$ (c)
+        \item $\circle$ (d)
+        \item $\circle$ None of the above
+        
+    \end{list}
+    
+    
+    
+\end{enumerate}\clearpage
+\section{Support Vector Machines [19 pts]}
+
+ In class, we discussed the properties and formulation of hard-margin SVMs, where we assume the decision boundary to be linear and attempt to find the hyperplane with the largest margin. Here, we introduce a new class of SVM called soft margin SVM, where we introduce the slack variables $e_i$ to the optimization problem and relax the assumptions. The formulation of soft margin SVM with no Kernel is
+    \begin{equation*}
+    \begin{aligned}
+    & \underset{\mathbf{w}, b, e}{\text{minimize}}
+    & & \frac{1}{2}\|\mathbf{w}\|_2^2 + C\left(\sum_{i = 1}^N e_i\right)\\
+    & \text{subject to}
+    & & y^{(i)}(\mathbf{w}^T\mathbf{x}^{(i)} + b) \geq 1 - e_i, \, \, \forall \; i = 1, \dots, N\\
+    & & & e_i \geq 0, \, \, \forall \; i = 1, \dots, N
+    \end{aligned}
+    \end{equation*}
+\begin{enumerate}
+    \item \textbf{[3pts]} Consider the $i$th training example $(\mathbf{x}^{(i)}, y^{(i)})$ and its corresponding slack variable $e_i$. Assuming $C > 0$ and is fixed, what would happen as $e_i \rightarrow \infty$?
+    
+    \textbf{Select all that apply:}
+    \begin{list}{}
+        \item $\square$ the constraint $y^{(i)}(\mathbf{w}^T\mathbf{x}^{(i)} + b) \geq 1 - e_i$ would hold for any $\mathbf{w}$ with finite entries.
+        \item $\square$ there would be no vector that satisfies the constraint $y^{(i)}(\mathbf{w}^T\mathbf{x}^{(i)} + b) \geq 1 - e_i$
+        \item $\square$ the objective function would approach infinity.
+    \end{list}
+    
+    
+    With this in mind, we hope that you can see why soft margin SVM can be applied even when the data is not linearly separable.
+    
+    
+    %\clearpage
+    
+    % Adjusting C in soft margin SVMs
+    \item \textbf{[5pts]} Which of the following are true when $C \rightarrow \infty$? Assume that the data is \textbf{not} linearly separable, unless otherwise specified.
+    
+    \textbf{Select all that apply:}
+    
+        \begin{list}{}
+        \item $\square$ When the data is linearly separable, the solution to the soft margin SVM would converge to the solution of hard margin SVM.
+        \item $\square$ There is no solution $\mathbf{w}, b$ satisfying all the constraints in the optimization problem with a non-infinite objective value.
+        % CONFUSING: \item $\square$ Any arbitrary vector $\mathbf{w}$ and scalar $b$ can satisfy the constraints in the optimization problem.
+        \item $\square$ The optimal weight vector would converge to the zero vector $\mathbf{0}$.
+        \item $\square$ When $C$ approaches to infinity, it could help reduce overfitting.
+    \end{list}
+    
+    
+    \clearpage
+    
+    \item \textbf{[5pts]} Which of the following are true when $C \rightarrow 0$? Assume that the data is \textbf{not} linearly separable, unless otherwise specified.
+    
+    \textbf{Select all that apply:}
+    
+    \begin{list}{}
+        \item $\square$ When the data is linearly separable, the solution to the soft margin SVM would converge to the solution of hard margin SVM.
+        \item $\square$ There is no solution $\mathbf{w}, b$ satisfying all the constraints in the optimization problem if its objective value doesn't approach infinity.
+        % CONFUSING: \item $\square$ Any arbitrary vector $\mathbf{w}$ and scalar $b$ can satisfy the constraints in the optimization problem.
+        \item $\square$ The optimal weight vector would converge to be the zero vector $\mathbf{0}$.
+        \item $\square$ When $C$ approaches to 0, doing so could help reduce overfitting.
+    \end{list}
+    
+    %\clearpage
+    
+    \item \textbf{[3pts]} An extension to soft margin SVM (or, an extension to the hard margin SVM we talked in class) is the 2-norm SVM with the following primal formulation
+    
+    \begin{equation*}
+        \begin{aligned}
+        & \underset{\mathbf{w}, b, e}{\text{minimize}}
+        & & \frac{1}{2}\|\mathbf{w}\|_2^2 + C\left(\sum_{i = 1}^N e_i^2\right)\\
+        & \text{subject to}
+        & & y^{(i)}(\mathbf{w}^T\mathbf{x}^{(i)} + b) \geq 1 - e_i, \, \, \forall \; i = 1, \dots, N\\
+        & & & e_i \geq 0, \, \, \forall \; i = 1, \dots N
+        \end{aligned}
+    \end{equation*}
+    
+    Which of the following is true about the 2-norm SVM? (Hint: think about $\ell_1$-regularization versus $\ell_2$ regularization!)
+    
+    \textbf{Select one:}
+        \begin{list}{}
+        \item $\circle$ If a particular pair of parameters $\mathbf{w}^*, b^*$ minimizes the objective function in soft margin SVM, then this pair of parameters is guaranteed to minimize the objective function in 2-norm SVM.
+        \item $\circle$ 2-norm SVM penalizes large $e_i$'s more heavily than soft margin SVM.
+        \item $\circle$ One drawback of 2-norm SVM is that it cannot utilize the kernel trick.
+        \item $\circle$ None of the above.
+    \end{list}
+    
+    
+    \begin{figure}[H]
+       \centering
+         \includegraphics[width=0.7\linewidth]{figures/svm}
+         \caption{SVM dataset}
+       \label{fig:SVM}
+     \end{figure}
+    \item \textbf{[3pts]} Consider the dataset shown in Figure~\ref{fig:SVM}. Which of the following models, when properly tuned, could correctly classify \textbf{ALL} the data points?
+    
+    \textbf{Select all that apply:}
+    
+        \begin{list}{}
+    \item $\square$ Logistic Regression without any kernel
+    \item $\square$ Hard margin SVM without any kernel
+    \item $\square$ Soft margin SVM without any kernel
+    \item $\square$ Hard margin SVM with RBF Kernel
+    \item $\square$ Soft margin SVM with RBF Kernel
+    \end{list}
+    
+    \end{enumerate}
+    
+    \clearpage
+    \section{Kernels [19pts]}
+    \begin{enumerate}
+    \item \textbf{[2pt]} Consider the following kernel function:
+
+    \[K(\xv, \xv') = \begin{cases}{\text{1,  if } \xv = \xv'} \\{\text{0,  otherwise}}\end{cases}\]
+
+    \textbf{True or False:} In this kernel space, any labeling of a set of instances $\{\xv^{(1)}, \xv^{(2)}, \ldots, \xv^{(N)} \}$ from a training set will be linearly separable. Assume that no two points in this instance set are identical.
+
+    \begin{list}{}
+        \item $\circle$ True
+        \item $\circle$ False
+    \end{list}
+    
+    
+    \item \textbf{[3pts]} Suppose that input-space is two-dimensional, \( x = (x_1, x_2)^T\). The feature mapping is defined as - \[\phi(x) = (x_1^2, x_2^2, 1, \sqrt{2}x_1x_2, \sqrt{2}x_1,\sqrt{2}x_2)^T\]
+    
+    What is the corresponding kernel function, i.e. \(K(x,z)\)? \textbf{Select one.}
+
+    
+    \begin{list}{}
+        \item $\circle$ \( (x_1z_1)^2 +(x_2z_2)^2 +1 \)
+        \item $\circle$ \( (1 + x^T z)^2 \)
+        \item $\circle$ \( (x^T z)^2 \)
+        \item $\circle$ \( x^T z \)
+    \end{list}
+    
+    \item \textbf{[3pts]} Suppose that input-space is three-dimensional, \( x = (x_1, x_2, x_3)^T\). The feature mapping is defined as - \[\phi(x) = (x_1^2, x_2^2, x_3^2, \sqrt{2}x_1x_2, \sqrt{2}x_1x_3,\sqrt{2}x_2x_3)^T\]
+
+    Suppose we want to compute the value of kernel function \(K(x,z)\) on two vectors \(x,z \in {\mathbb{R}}^3\). We want to check how many additions and multiplications are needed if you map the input vector to the feature space and then perform dot product on the mapped features. Report \(\alpha + \beta\), where \(\alpha\) is the number of multiplications and \(\beta\) is the number of additions.
+
+    Note: Multiplication/Addition with constants should also be included in the counts.
+    
+    \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    %solution
+    \end{tcolorbox}
+    
+    \clearpage
+    \item \textbf{[3pts]} Suppose that input-space is three-dimensional, \( x = (x_1, x_2, x_3)^T\). The feature mapping is defined as - \[\phi(x) = (x_1^2, x_2^2, x_3^2, \sqrt{2}x_1x_2, \sqrt{2}x_1x_3,\sqrt{2}x_2x_3)^T\]
+
+    Suppose we want to compute the value of kernel function \(K(x,z)\) on two vectors \(x,z \in {\mathbb{R}}^3\).We want to check how many additions and multiplications are needed if you do the computation through the kernel function you derived above. Report \(\alpha + \beta\), where \(\alpha\) is the number of multiplications and \(\beta\) is the number of additions.
+
+    Note: Multiplication/Addition with constants should also be included in the counts.
+    
+    \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    %solution
+    \end{tcolorbox}
+    
+    
+    \item \textbf{[3pts]} Suppose one dataset contains four data points in \(\R^1\) space, as shown in Figure~\ref{fig:lindata}
+
+    \begin{figure}[H]
+    \centering
+        \includegraphics[width=0.7\linewidth]{figures/lineardataset.png}
+        \caption{Data in $\R^1$}
+        \label{fig:lindata}
+    \end{figure}
+
+
+    Different shapes of the points indicate different labels. If we train a linear classifier on the dataset, what is the lowest training error for a linear classifier on \(\R^1\)?
+    
+    \begin{tcolorbox}[fit,height=1cm, width=2cm, blank, borderline={1pt}{-2pt},nobeforeafter]
+    %solution
+    \end{tcolorbox}
+    
+    \item \textbf{[3pts]} Following the above question, which of the feature mappings below can we use to project the dataset to higher dimensional space such that training a linear classifier on the projected dataset would yield zero training error?
+        \begin{list}{}
+        \item $\circle$ \(\phi(x) = (x, 1)\)
+        \item $\circle$ \(\phi(x) = (x, x^3)\)
+        \item $\circle$ \(\phi(x) = (x, x^2)\)
+        \item $\circle$ \(\phi(x) = (x, (x+1)^2)\)
+    \end{list}
+
+    
+    
+    \item \textbf{[2pt]} \textbf{True or False:} Given the same training data, in which the points are linearly separable, the margin of the decision boundary produced by SVM will always be greater than or equal to the margin of the decision boundary produced by Perceptron.
+    
+    \begin{list}{}
+        \item $\circle$ True
+        \item $\circle$ False
+    \end{list}
+    
+    
+    
+    
+
+    
+\end{enumerate}
+
+% \section{EM}
+% \begin{center}
+%     \textbf{!!!Listed in Slack channel as a potential topic but was not discussed in lecture! Included for completeness!!!}
+% \end{center}
+% \begin{enumerate}
+%     \item Which of the following is \textbf{correct} about EM?
+    
+%     \textbf{Select one:}
+%     \begin{list}{}
+%         \item $\circle$ The EM algorithm is guaranteed to converge to the global optimum.
+%         \item $\circle$ If we start the EM algorithm with different starting values, we are guaranteed to obtain the same solution after the algorithm converges.
+%         \item $\circle$ It is possible for the objective function to decrease during an iteration of EM.
+%         \item $\circle$ None of the above.
+%     \end{list}
+    
+% \end{enumerate}
+%\clearpage
+\clearpage
+
+
+
+
+\textbf{Collaboration Questions} Please answer the following:
+
+
+    After you have completed all other components of this assignment, report your answers to the collaboration policy questions detailed in the Academic Integrity Policies found \href{http://www.cs.cmu.edu/~mgormley/courses/10601bd-f18/about.html#7-academic-integrity-policies}{here}.
+    \begin{enumerate}
+        \item Did you receive any help whatsoever from anyone in solving this assignment? Is so, include full details.
+        \item Did you give any help whatsoever to anyone in solving this assignment? Is so, include full details.
+        \item Did you find or come across code that implements any part of this assignment ? If so, include full details.
+    \end{enumerate}
+    
+
+    \begin{solution}
+    % If you are using the latex template, remove the empty spaces
+    \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip
+    \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip
+    \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip
+    \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip
+    \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip
+    \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip
+    \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip \bigskip
+    \end{solution}
+
+
+\end{document}
